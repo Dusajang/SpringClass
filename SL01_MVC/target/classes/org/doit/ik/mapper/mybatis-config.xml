@@ -9,6 +9,7 @@
     <setting name="mapUnderscoreToCamelCase" value="true"/>
   </settings>
   <typeAliases>
+  <!-- 타입 알리아스 -->
     <!-- <typeAlias type="org.doit.ik.domain.DeptDTO" alias="DeptDTO" /> --> 
     <typeAlias type="java.util.Map" alias="Map" />
     <typeAlias type="java.util.HashMap" alias="HashMap" />
