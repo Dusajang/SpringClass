@@ -3,6 +3,8 @@ package org.doit.ik;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.doit.ik.domain.DeptDTO;
 import org.doit.ik.domain.EmpDTO;
 import org.doit.ik.mapper.scott.DeptMapper;
@@ -34,7 +36,7 @@ public class ScottRestController {
 	@Setter(onMethod=@__({@Autowired}))
 	private DeptMapper deptmapper;
 	
-	//json -> DeptDTO
+	//json -> DeptDTO == @RequestBody
 	@PostMapping(value="/scott/dept/new")
 	public ResponseEntity<String> insertDept(@RequestBody DeptDTO dto){
 		logger.info("> ScottRestController.insertDept()...");
@@ -44,15 +46,38 @@ public class ScottRestController {
 				: new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	@DeleteMapping(value="/scott/dept/delete/{deptno}")
-	public ResponseEntity<String> removeDept(@PathVariable int deptno) {
-	    logger.info("> ScottRestController.removeDept()... deptno: " + deptno);
-	    int rowCount = this.deptmapper.removeDept(deptno);
-	    return rowCount == 1
-	            ? new ResponseEntity<>("SUCCESS", HttpStatus.OK)
-	            : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-		
+	
+	 @DeleteMapping(value="/scott/dept/{deptno}") 
+	 public ResponseEntity<String> deleteDept(@PathVariable("deptno") int deptno){
+	 logger.info("> ScottRestController.deleteDept()...");
+	 
+	 int rowCount = this.deptmapper.deleteDept(deptno);
+	 
+	 return rowCount==1 ? new ResponseEntity<>("SUCCESS", HttpStatus.OK) : new
+	 ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
+	
+	
+	
+	/*
+	 * @GetMapping(value="/scott/dept/delete") public ResponseEntity<String>
+	 * deleteDept(@RequestParam("deptno") int deptno){
+	 * logger.info("> ScottRestController.deleteDept()...");
+	 * 
+	 * //int deptno = Integer.parseInt(request.getParameter("deptno"));
+	 * 
+	 * int rowCount = this.deptmapper.deleteDept(deptno);
+	 * 
+	 * return rowCount==1 ? new ResponseEntity<>("SUCCESS", HttpStatus.OK) : new
+	 * ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
+	 */
+	/*
+	 * @DeleteMapping(value="/scott/dept/delete/{deptno}") public
+	 * ResponseEntity<String> removeDept(@PathVariable int deptno) {
+	 * logger.info("> ScottRestController.removeDept()... deptno: " + deptno); int
+	 * rowCount = this.deptmapper.removeDept(deptno); return rowCount == 1 ? new
+	 * ResponseEntity<>("SUCCESS", HttpStatus.OK) : new
+	 * ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); }
+	 */	
 		
 }
 

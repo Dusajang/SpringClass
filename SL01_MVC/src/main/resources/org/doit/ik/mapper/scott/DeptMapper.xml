@@ -17,6 +17,10 @@
   		
   	</insert>
   	
+  	<delete id="deleteDept" parameterType="int">
+  		DELETE FROM dept WHERE deptno = #{deptno}
+  	</delete>
+  	
 	<delete id="removeDept" parameterType="int">
 	    DELETE FROM dept WHERE deptno = #{deptno}
 	</delete>

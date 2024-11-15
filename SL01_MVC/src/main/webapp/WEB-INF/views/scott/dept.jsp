@@ -1,21 +1,20 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page trimDirectiveWhitespaces="true" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<link rel="shortcut icon" type="image/x-icon" href="images/SiSt.ico">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insert title here</title>
+<link rel="shortcut icon" href="/images/SiSt.ico">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <link rel="stylesheet" href="/resources/cdn-main/example.css">
 <script src="/resources/cdn-main/example.js"></script>
 <script src="/resources/js/dept.js"></script>
 <style>
  span.material-symbols-outlined{
     vertical-align: text-bottom;
- }  
+ }
 </style>
 <style>
    /* The Modal (background) */
@@ -91,21 +90,35 @@
 </head>
 <body>
 <header>
-  <h1 class="main"><a href="#" style="position: absolute;top:30px;">KenIk HOme</a></h1>
-  <ul>  
+  <h1 class="main"><a href="#" style="position: absolute;top:30px;">kenik HOme</a></h1>
+  <ul>
     <li><a href="#">로그인</a></li>
     <li><a href="#">회원가입</a></li>
   </ul>
 </header>
+<h3>
+  <span class="material-symbols-outlined">view_list</span> jsp days00
+</h3>
 <div>
-  <xmp class="code"> 
-  	dept.jsp
-  </xmp>
+  <xmp class="code">  
+    views
+      ㄴ scott
+          ㄴ dept.jsp
+    
+    http://localhost/scott/dept 요청 -> dept.jsp 페이지 응답
+    1) 컨트롤러 추가
+       ScottController.java
+    
+    2) Mybatis 사용해서 DB처리
+       DeptMapper.java 인터페이스 
+       DeptMapper.xml 
+    3) dept.jsp 코딩.        
+  </xmp> 
   
   <form action="/scott/emp" method="post">
-  <table id="tbl-dept">
-    <caption></caption>
-    <thead>
+    <table id="tbl-dept">
+     <caption></caption>
+     <thead>
       <tr>
         <th></th>
         <th>DeptNo</th>
@@ -115,31 +128,30 @@
       </tr>     
      </thead>
      <tbody>
-     	<c:forEach items="${ list }" var="dto">
-     		<tr>
-     			<td><input type="checkbox" name="deptno" value="${ dto.deptno }" data-deptno="${ dto.deptno }"></td>
-     			<td>${ dto.deptno }</td>
-     			<td>${ dto.dname }<span class="badge right red">${ dto.numberOfEmps }</span></td>
-     			<td>${ dto.loc }</td>
-     			<td align="center">
-     				<span class="material-symbols-outlined delete" 
-           			data-deptno="${ dto.deptno }">close</span>
-     			</td>
-     		</tr>
-     	</c:forEach>
-     </tbody>
-     <tfoot>
-     	<tr>
-     		<td colspan="5">
-     			<button id="search" class="search"  type="button">search</button> 
-             	<button id="add" type="button" class="add">부서추가</button> 
-     		</td>
-     	</tr>
-     </tfoot>
-  </table>
+         <c:forEach items="${ list }"  var="dto">
+         <tr>
+            <td><input type="checkbox" data-deptno="${ dto.deptno }" value="${ dto.deptno }" name="deptno"></td>
+           <td>${ dto.deptno }</td>
+           <td>${ dto.dname }<span class="badge right red">${ dto.numberOfEmps }</span></td>
+           <td>${ dto.loc }</td>
+           <td align="center"><span class="material-symbols-outlined delete" 
+           data-deptno="${ dto.deptno }">close</span></td>
+         </tr>
+         </c:forEach>
+      </tbody>
+      <tfoot>
+         <tr>
+           <td colspan="5">
+             <button id="search" class="search"  type="button">search</button> 
+             <button id="add" type="button" class="add">부서추가</button> 
+           </td>
+         </tr>
+      </tfoot>
+    </table>
   </form>
   
-    <!-- 부서 추가 모달창 -->
+  
+  <!-- 부서 추가 모달창 -->
 <!-- The Modal -->
 <div id="add-modal" class="modal">
 
@@ -171,110 +183,95 @@
     </div>
   </div> 
 </div>  
-  
-  
-  <script>
-  	$(function () {
-  		//dept.js
-  		var addModal = $("#add-modal");
-  		$("#add").on("click", function () {
-  			addModal.css("display", "block");
-  			event.stopPropagation();
-		});
-  		// 모달창의 닫기 버튼
-  		$(".cancel").on("click", function () {
-  			addModal.css("display", "none");
-		});
-  		//
-  		$("body").on("click", function (event){
-  			//BodyElement가 찍힘
-  	         if( event.currentTarget == addModal ) addModal.css("display", "none");  
-  	   });
-  		// 모달창 확인 버튼 클릭
-  		$("#add-modal #add-dept").on("click", function (event) {
-			let deptno = $("#add-modal :text[name=deptno]").val();
-			let dname = $("#add-modal :text[name=dname]").val();
-			let loc = $("#add-modal :text[name=loc]").val();
-			const dept = {
-				deptno:deptno,
-				dname:dname,
-				loc:loc
-			};
-			
-			// [dept.js] jq ajax + js객체.add(dept, callback, error) 선언  (js 객체의 멤버로 선언)
-			deptService.add(dept, function (result){
-				// 1. 모달창 닫기
-				addModal.css("display", "none");
-				// 2.
-				if(result=="SUCCESS"){
-					 let tr = $(`
-		                      <tr>
-		                        <td><input type="checkbox" data-deptno="\${ deptno }" value="\${ deptno }" name="deptno"></td>
-		                       <td>\${ deptno }</td>
-		                       <td>\${ dname }<span class="badge right red">0</span></td>
-		                       <td>\${ loc }</td>
-		                       <td align="center"><span class="material-symbols-outlined delete" data-deptno="\${ deptno }">close</span></td>
-		                     </tr>
-		                      `);   
-					 
-					 $(tr).appendTo($("table tbody"));
-					 
-				}//if
-				alert(result);
-			});//add
-		});
-  		
-  		//#tbl-dept > tbody > tr > td:nth-child(5) > span
-  		// 새로 생성되는 부서의 닫기X 원래 있던 삭제 버튼 실행
-  		/* 
-  		  $(document).on("click",".delete", function () {
-			  alert("클릭한 부서 삭제!!!!");
-			});
-  		 */
-  		$("#tbl-dept > tbody > tr > td > span").on("click", function (event) {
-  			// alert("삭제 감지");
-  		    // 클릭한 span 요소의 data-deptno 속성에서 부서 번호를 가져옴
-  		    const deptno = $(this).data("deptno");
-  		    console.log(deptno);
-  		    
-  		    // deleteDept 함수에 deptno 전달
-  		    deleteDept(deptno, function(result) {
-  		        if (result === "SUCCESS") {  
-  		            $(event.target).closest("tr").remove();
-  		        } else {
-  		            alert("부서 삭제에 실패!!");
-  		        }
-  		    }, function(error) {
-  		        console.error("삭제 오류:", error);
-  		        alert("삭제 중 오류가 발생!!!!");
-  		    });
-  		});
-  		
-  		
-		//
-		$("#search").on("click", function (event) {
-			if(!$("tbody :checkbox:checked").length){
-				alert("부서를 체크하세요.");
-				return;
-			}
-			
-			$("form").submit();
-		});
-	})// document.ready
-  
-  	
-  </script>
+</div>
 
-  
-</div> 
+<script>
+$(function (){
+   // [부서 추가]
+   var addModal = $("#add-modal");
+   $("#add").on("click", function() {      addModal.css("display", "block");      } );
+   $(".cancel").on("click", function() {      addModal.css("display", "none");   });
+   $("body").on("click", function (event){
+         if( event.currentTarget == addModal ) addModal.css("display", "none");  
+   });
+   
+   $("#add-modal #add-dept").on("click", function (){
+      let deptno = $("#add-modal :text[name=deptno]").val();
+      let dname = $("#add-modal :text[name=dname]").val();
+      let loc = $("#add-modal :text[name=loc]").val();
+       //  js Object 
+       let dept = {
+           deptno: deptno,
+           dname : dname,
+           loc : loc
+       }; 
+       
+       // jquery ajax 처리 : dept.js    add() 호출 
+       deptService.add(dept, function (result){
+          // 처리 코딩 ... 
+          // 부서 추가 요청 url : dept.js add()  '/scott/dept/new'
+          // 1. 모달창 닫기
+          addModal.css("display", "none"); 
+           // 2. 
+           if ( result === 'SUCCESS' ) {
+               let tr = $(`
+                      <tr>
+                        <td><input type="checkbox" data-deptno="\${ deptno }" value="\${ deptno }" name="deptno"></td>
+                       <td>\${ deptno }</td>
+                       <td>\${ dname }<span class="badge right red">0</span></td>
+                       <td>\${ loc }</td>
+                       <td align="center"><span class="material-symbols-outlined delete" data-deptno="\${ deptno }">close</span></td>
+                     </tr>
+                      `);   
+                
+                $(tr)
+                     .appendTo(  $("table tbody") )   
+                     .find("span.delete")   
+                             .on("click", function (){
+                                if (   confirm("정말 삭제할까요?")  ) {
+                                  let deptno = $(this).data("deptno");  // data-deptno=50
+                                  var spanDelete = $(this);
+                                  deptService.remove( deptno, function (result){
+                                     if( result  === 'SUCCESS' ) 
+                                        spanDelete.parents("tr").remove();
+                                  } ); // remove   
+                                } // if
+                             });
+                // $("table tbody").append($(tr));
+           } // if
+           
+           alert( result );
+           
+       });
+      
+   });
+   
+   // X  닫기 버튼을 클릭
+   $("#tbl-dept > tbody > tr > td > span").on("click", function (event){
+        if (   confirm("정말 삭제할까요?")  ) {
+           // data-deptno="50"
+           let deptno = $(this).data("deptno");
+           
+           deptService.remove(deptno, function (result){
+              if(result === 'SUCCESS')
+                 $( event.currentTarget ).parents("tr").remove();
+           });
+           
+        } // if
+     });
+   
+   
+   //
+   $("#search").on("click", function (event){
+      if( !$("tbody :checkbox:checked").length){
+           alert("부서를 체크하세요.");
+           return ;
+      } // if
+      
+      $("form").submit();
+   });
+});
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
-
- 
-

@@ -8,6 +8,9 @@ public interface DeptMapper {
 
 	ArrayList<DeptDTO>selectDept();
 	int insertDept(DeptDTO dto);
+	
+	int deleteDept(int deptno);
+	
 	int removeDept(int deptno);
 	
 }
