@@ -81,6 +81,9 @@
 			if(parseInt(result) > 0){
 				alert(`\${result} 번 글이 등록되었습니다.`);
 			}
+			if(result === 'SUCCESS'){
+				alert("삭제 완료!!!");
+			}
 		}// checkModal
 	});
   </script>

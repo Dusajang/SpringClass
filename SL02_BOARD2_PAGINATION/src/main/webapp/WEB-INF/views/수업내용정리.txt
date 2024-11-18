@@ -1,0 +1,6 @@
+게시판 + 페이징 처리 추가
+SL02_BOARD -> SL02_BOARD_PAGINATION
+
+webapp
+	ㄴ board
+		ㄴ list파일    - 요청하기위한 url로 사용

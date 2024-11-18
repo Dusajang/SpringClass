@@ -1,0 +1,9 @@
+1. SL00_DefaultSettings -> SL03_DI
+2. 스프링 DI(의존성주입)
+	org.doit.ik.di 패키지 추가
+	1)	  ㄴRecord.java 인터페이스 추가
+		  ㄴRecordImpl.java 클래스 추가
+		  ㄴRecordView.java 인터페이스 추가
+		  ㄴRecordViewImpl.java 클래스 추가
+	2) Ex01.java 파일추가 + main()	  
+		  

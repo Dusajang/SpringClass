@@ -1,0 +1,54 @@
+게시판 + 검색 기능 추가
+SL02_BOARD_PAGINATION -> SL02_BOARD3_SEARCH
+
+1. 게시판 검색
+	1) 단일 항목 검색 : 제목("t"), 내용("c"), 작성자("w") 검색
+	2) 다중 항목 검색 : 제목 + 내용 ("tc")/ 제목 + 작성자 ("tw")/ 제목 + 내용 + 작성자 ("tcw")
+	
+2. 검색조건(type) : select, checkbox
+	검색어(keyword) : input
+
+
+
+
+
+<sql id="criteria">
+	   	<trim prefix="(" suffix=") AND" prefixOverrides="OR">
+	    	<foreach collection="typeArr" item="type">
+	    		<trim prefix="OR">
+	    			<choose>
+	    				<when test="type=='t'.toString()">REGEXP_LIKE( title , #{ keyword}, 'i') </when>
+	    				<when test="type=='C'.toString()">REGEXP_LIKE( content , #{ keyword}, 'i') </when>
+	    				<when test="type=='W'.toString()">REGEXP_LIKE( writer , #{ keyword}, 'i') </when>
+	    			</choose>
+	    		</trim>
+	    	</foreach>
+	    </trim>
+   </sql>
+
+
+
+
+
+BEGIN
+    FOR i IN 1 .. 158
+    LOOP 
+      INSERT INTO tbl_board (bno, title, content, writer)
+      VALUES ( seq_board.nextval ,  'PL SQL-' || i, 'PL SQL-' || i, '홍길동' ) ;
+    END LOOP;  
+END;
+COMMIT;
+
+
+ 
+ BEGIN
+    FOR i IN 1 .. 158
+    LOOP 
+      IF MOD(i,5)=0 OR MOD(i, 17)=0 THEN
+        UPDATE tbl_board
+        SET title = '자바-' || i        
+        WHERE bno = i;
+      END IF; 
+    END LOOP;  
+END;
+COMMIT;
