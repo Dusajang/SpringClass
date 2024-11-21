@@ -42,7 +42,7 @@ public class NoticeDao {
 		
 		return cnt;
 	}
-	// 공지하상 목록을 List 컬렉션으로 반환하는 메서드
+	// 공지사항 목록을 List 컬렉션으로 반환하는 메서드
 	public List<NoticeVO> getNotices(int page, String field, String query) throws ClassNotFoundException, SQLException
 	{					
 		

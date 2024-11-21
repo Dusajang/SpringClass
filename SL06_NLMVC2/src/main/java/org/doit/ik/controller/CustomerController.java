@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.doit.ik.domain.NoticeVO;
 import org.doit.ik.persistence.NoticeDao;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +25,83 @@ public class CustomerController {
 
 	@Autowired
 	private NoticeDao noticeDao;
+
+	
+	
+	//<a class="btn-del button" href="noticeDel.htm">삭제</a>
+	@GetMapping("noticeDel.htm")
+	public String noticeDel(@RequestParam("seq") String seq) throws ClassNotFoundException, SQLException {
+		int rowCount = this.noticeDao.delete(seq);
+		
+		if(rowCount ==1 ) {
+	         //삭제 성공 -> 글 목록( 리다이렉트 )
+	      return "redirect:notice.htm";
+
+	      }else {
+	         //삭제 실패 -> 글 상세 ( 리다이렉트 )
+	      return "redirect:noticeDetail.htm?seq="+seq+"&error";
+	      }
+	}
+	
+	
+	//http://localhost/customer/noticeEdit.htm?seq=3
+	//<input type="submit" value="수정" class="btn-save button"/>
+	//<form action="" method="post">
+	@PostMapping("noticeEdit.htm")
+	public String noticeEdit(NoticeVO notice, Model model) throws ClassNotFoundException, SQLException {
+		int rowCount = this.noticeDao.update(notice);
+		if (rowCount==1) {
+			// 글상세 페이지 이동 리다이렉트
+			return "redirect:noticeDetail.htm?seq="+notice.getSeq();
+		}else {
+			// 글 목록 이동 포워딩
+			return "notice.htm";
+		}//if
+	}
+	
+	
+	//<a class="btn-edit button" href="noticeEdit.htm?seq=${ notice.seq }">수정</a>
+	@GetMapping("noticeEdit.htm")
+	public String noticeEdit(@RequestParam("seq") String seq, Model model) throws ClassNotFoundException, SQLException {
+		NoticeVO notice = this.noticeDao.getNotice(seq);
+		model.addAttribute("notice", notice);
+		return"noticeEdit.htm";
+	}
+	
+	
+	
+   /* 스프링에선 이렇게 할 필요 없다.
+   @PostMapping(value="/noticeReg.htm")
+   public String noticeReg( @RequestParam("title") String title, @RequestParam("content") String content ) {
+      NoticeVO notice = new NoticeVO();
+      notice.setTitle(title);
+      return "noticeReg.jsp";
+   }
+   */
+	//<input class="btn-save button" type="submit" value="저장" />
+	//<form action="" method="post">
+	@PostMapping(value = "/noticeReg.htm")
+	public String noticeReg(NoticeVO notice) throws ClassNotFoundException, SQLException {   // 커맨드 객체
+		int rowCount = this.noticeDao.insert(notice);
+		if (rowCount==1) {
+			// 글목록 페이지 이동 리다이렉트
+			return "redirect:notice.htm";
+		}else {
+			// 글쓰기 페이지 이동 포워딩
+			return "noticeReg.htm";
+		}//if
+		
+	}
+	
+	
+	
+	//<a class="btn-write button" href="noticeReg.htm">글쓰기</a>
+	@GetMapping("/noticeReg.htm")
+	public String noticeReg(HttpSession session) {
+		// 스프링 시큐리티(보안) : 인증 + 권한 처리
+		return "noticeReg.jsp";
+	}
+	
 	
 	// http:://localhost/customer/noticeDatail.htm?seq=1
 	@GetMapping("/noticeDetail.htm")

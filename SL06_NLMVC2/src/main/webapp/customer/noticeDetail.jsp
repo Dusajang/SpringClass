@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+ <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -8,6 +9,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title>index</title>
 		<link href="../css/customer.css" type="text/css" rel="stylesheet" />
+		<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
 	</head>
 	<body>
 		<div id="header">
@@ -121,13 +123,26 @@
 							</dd>
 						</dl>
 
-						<div class="article-content" >${ notice.content }</div>
+						<div class="article-content" ><c:out value="${ notice.content }"></c:out></div>
 					</div>
 					<p class="article-comment margin-small">
 						<a class="btn-list button" href="notice.htm">목록</a>						
-						<a class="btn-edit button" href="noticeEdit.htm">수정</a>
-						<a class="btn-del button" href="noticeDel.htm">삭제</a>
+						<a class="btn-edit button" href="noticeEdit.htm?seq=${ notice.seq }">수정</a>
+						<a class="btn-del button" href="noticeDel.htm?seq=${ notice.seq }">삭제</a>
 					</p>
+					
+					<script>
+					    $(document).ready(function () {
+					        $(".btn-del").on("click", function (event) {
+					            // confirm
+					            if (!confirm("삭제하시겠습니까?")) {
+					                event.preventDefault(event);
+					            }
+					        });
+					    });
+					</script>
+					
+					
 					<div class="margin-small" style="border-top: 1px solid #dfdfdf;">
 						<dl class="article-detail-row">
 							<dt class="article-detail-title">
