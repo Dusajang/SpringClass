@@ -1,0 +1,54 @@
+/customer/notice.htm    요청URL
+
+p.505
+Chapter 12  스프링 트랜잭션 *****
+SL09_NLTRANSACTION_TMANAGER_TTEMPLE 
+
+p.5120 표
+
+[]트랜잭션 처리 필요 부분]
+1. 공지사항 새글 작성 		(insert)
+2. 작성자 포인트 1 증가		(update)
+	포인트는 3보다 크면 오류 발생시키도록 제약조건...
+	
+	
+ALTER TABLE member
+ADD (point number(10) default(0));
+
+ALTER TABLE notices
+ADD CONSTRAINT ck_notices_title UNIQUE(title);
+
+ALTER TABLE member
+ADD CONSTRAINT ck_notices_point CHECK (point <3);
+
+commit;
+
+
+--notices 테이블에 pk 설정 확인
+SELECT *
+FROM user_constraints
+WHERE table_name ='NOTICES';
+
+--seq 컬럼 PK_NOTICES_SEQ 제약 조건 설정
+
+ALTER TABLE NOTICES
+ADD CONSTRAINT PK_NOTICES_SEQ PRIMARY KEY (SEQ);
+
+commit;
+
+DELETE FROM member;
+
+
+SELECT*
+FROM member;
+
+update member
+set point = 1
+WHere id = 'doodda77';
+commit;
+
+
+
+Spring Tiles
+mybatis
+Spring Security
