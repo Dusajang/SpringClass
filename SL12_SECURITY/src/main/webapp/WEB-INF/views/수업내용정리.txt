@@ -1,4 +1,5 @@
 [수업내용정리]
+ALTER TABLE  MEMBER
+   DROP CONSTRAINT CK_NOTICES_POINT;   
 
-[Spring mybatis (11/25 월)]
 

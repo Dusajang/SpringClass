@@ -3,3 +3,131 @@
 [Spring mybatis (11/25 월)]
 
 SL12_SECURITY
+ALTER TABLE  MEMBER
+   DROP CONSTRAINT CK_NOTICES_POINT;   
+
+ 시큐리티가 필요한 URL 설계
+   ㄱ. 게시판 글 쓰기 - 인증(로그인) O
+       작성자 == 로그인한 계정(ID)
+   ㄴ. 게시판 수정/삭제 - 작성자 확인, 관리자 권한 삭제는 가능
+   ㄷ. 그 외의 요청들은 인증받지않아도 모든 사용자가 사용 가능
+   
+   
+(암기)      시큐리티 내부 구조(개요)
+
+(1)  AuthenticationManager(인증관리자) - 가장 중요한 역할.
+                                         인증을 담당하는 존재
+                                         인터페이스
+                                         인증을 다양한 방식으로 인증 처리를 할 수 있도록 설계됨.
+                                         (책임자)
+(2)  ProviderManager(제공관리자) - 인증 처리를 AuthenticationProvider 객체를 이용해서
+인증처리를 위임하는 역할. 인터페이스
+(3)  AuthenticationProvider(인증제공자) - 실제 인증 처리를 하는 역할(실무자)
+***(4)  UserDetailsService(사용자상세서비스) - 인증된 실제 사용자의 정보+권한 정보를 
+처리해서 반환하는 객체. 인터페이스   
+   
+(3) + (4) 직접 구현할 수 있다.   
+ 
+   
+   
+
+1. 의존모듈 추가
+pom.xml
+<dependency>
+   <groupId>org.springframework.security</groupId>
+   <artifactId>spring-security-web</artifactId>
+   <version>${org.springframework-version}</version>
+</dependency>
+
+<dependency>
+   <groupId>org.springframework.security</groupId>
+   <artifactId>spring-security-config</artifactId>
+   <version>${org.springframework-version}</version>
+</dependency>
+
+<dependency>
+   <groupId>org.springframework.security</groupId>
+   <artifactId>spring-security-core</artifactId>
+   <version>${org.springframework-version}</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-taglibs -->
+<dependency>
+   <groupId>org.springframework.security</groupId>
+   <artifactId>spring-security-taglibs</artifactId>
+   <version>${org.springframework-version}</version>
+</dependency>
+
+security-context가 위치하는 경로는 다를 수 있음
+잘 체크하자
+
+web.xml
+<filter>
+	 <filter-name>springSecurityFilterChain</filter-name> 
+	 <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class> 
+</filter> 
+<filter-mapping> 
+	<filter-name>springSecurityFilterChain</filter-name> 
+	<url-pattern>/*</url-pattern> 
+</filter-mapping>
+
+
+security-context.xml
+<!-- p.681 -->
+   <security:http use-expressions="true"> 
+   
+  	 <security:intercept-url pattern="/customer/noticeReg.htm" access="isAuthenticated()"/>
+     <security:intercept-url pattern="/customer/noticeDel.htm" access="hasRole('ROLE_ADMIN')"/>
+     <security:intercept-url pattern="/**" access="permitAll" />
+     
+     <!-- /joinus/login.htm -> login.jsp -->
+     <security:form-login
+     login-page="/joinus/login.htm"  --> 내가 만든 로그인 페이지로 설정
+     />  
+     
+
+<!-- Spring Security 5 버전부터는 반드시 PasswordEndcoder를 이용해서 비민번호 변경/처리 -->
+ <!-- 인증관리자 : 총괄책임자 -->
+ <security:authentication-manager> 
+  <!-- 인증제공자 : 실무자 -->
+ 	<security:authentication-provider>
+ 		<security:user-service>
+ 		  <security:user name="hong" authorities="ROLE_USER" password="{noop}1234"/>
+        <security:user name="admin" authorities="ROLE_USER, ROLE_MANAGER, ROLE_ADMIN" password="{noop}1234"/>
+ 		</security:user-service>
+ 	</security:authentication-provider>
+ </security:authentication-manager>
+ 
+ {noop}암호화하지 않고 비밀번호 쓰겠다.
+
+     
+header.jsp
+<li>
+	<sec:authorize access="isAnonymous()">
+		<a href="${pageContext.request.contextPath }/joinus/login.htm">로그인</a>
+	</sec:authorize>
+	<sec:authorize access="isAuthenticated()">
+		<form action="${  pageContext.request.contextPath   }/joinus/logout.htm" method="post">                     
+                    [<sec:authentication property="principal.username"/>] 님
+                    <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
+                    <button>로그아웃</button>
+      			</form> 
+	</sec:authorize>
+</li>
+
+폼에 action에 "/login" 주기
+<form action="/login" method="post">
+
+
+
+login.jsp
+<form>태그 안에 
+<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }"><input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
+
+
+hong 인증 -> 삭제버튼 -> 403 접근 금지 오류 -> 특정 URL 이동....
+security-context.xml에서
+<security:access-denied-handler error-page="/common/accessError.htm"/>
+//
+403 접근 금지 오류 -> 직접 개발자가 구현한 클래스 객체 호출
+<security:access-denied-handler ref="customAccessDeniedHandler"/>
